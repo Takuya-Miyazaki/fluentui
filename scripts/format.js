@@ -16,7 +16,7 @@ async function main() {
   const { all: runOnAllFiles, check: checkMode } = parsedArgs;
 
   console.log(
-    `Running prettier on ${runOnAllFiles ? 'all' : 'changed'} files (on ${numberOfCpus} processes | in ${
+    `Running format on ${runOnAllFiles ? 'all' : 'changed'} files (on ${numberOfCpus} processes | in ${
       checkMode ? 'check' : 'write'
     } mode)`,
   );
@@ -34,7 +34,7 @@ async function main() {
     await runOnChanged({ queue, paths });
   }
 
-  await queue.onEmpty().catch(error => {
+  await queue.onEmpty().catch((error) => {
     console.error(error);
     process.exit(1);
   });
@@ -42,16 +42,16 @@ async function main() {
 
 function parseArgs() {
   return require('yargs')
-    .usage('Usage: prettier [commitHash] [options]')
-    .example('prettier', 'Run prettier only on changed files')
-    .example('prettier HEAD~3', 'Run prettier only on changed files since HEAD~3')
+    .usage('Usage: format [commitHash] [options]')
+    .example('format', 'Run format only on changed files')
+    .example('format HEAD~3', 'Run format only on changed files since HEAD~3')
     .options({
       all: {
-        description: 'Run prettier on all files',
+        description: 'Run format on all files',
         boolean: true,
       },
       check: {
-        description: 'Run prettier in check mode. useful for CI',
+        description: 'Run format in check mode. useful for CI',
         boolean: true,
       },
     })
@@ -74,7 +74,7 @@ async function runOnChanged(options) {
   const files = gitDiffOutput
     .toString('utf8')
     .split('\n')
-    .filter(fileName => prettierExtRegex.test(fileName));
+    .filter((fileName) => prettierExtRegex.test(fileName));
 
   const fileGroups = [];
   for (let chunkStart = 0; chunkStart < files.length; chunkStart += numberOfCpus) {
@@ -82,7 +82,7 @@ async function runOnChanged(options) {
   }
 
   await queue.addAll(
-    fileGroups.map(group => () => {
+    fileGroups.map((group) => () => {
       console.log(`Running for ${group.length} files!`);
       return runPrettier(group, { runAsync: true, check: parsedArgs.check });
     }),
@@ -101,13 +101,13 @@ async function runOnAll(options) {
     runPrettierForFolder(paths.root, { runAsync: true, nonRecursive: true, check: parsedArgs.check }),
   );
   await queue.addAll(
-    ['apps', 'packages/!(fluentui)', 'packages/fluentui', '{.*,scripts,typings}'].map(name => () =>
+    ['apps', 'packages/!(fluentui)', 'packages/fluentui', '{.*,scripts,typings}'].map((name) => () =>
       runPrettierForFolder(name, { check: parsedArgs.check }),
     ),
   );
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

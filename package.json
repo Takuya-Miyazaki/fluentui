@@ -105,7 +105,7 @@
     "style-loader": "2.0.0",
     "imports-loader": "1.2.0",
     "storybook-addon-performance": "0.14.0",
-    "postcss": "8.2.4",
+    "postcss": "8.2.10",
     "postcss-loader": "4.1.0",
     "postcss-modules": "2.0.0",
     "ts-loader": "8.0.14",
